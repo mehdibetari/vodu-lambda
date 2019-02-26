@@ -1,8 +1,9 @@
-let fs              = require('fs');
-let async           = require('async');
-let imdbScraper     = require('./scrapers/imdb-scraper');
-let netflixScraper  = require('./scrapers/netflix-scraper');
-let netflixProvider = require('./providers/netflix-provider');
+const fs              = require('fs');
+const async           = require('async');
+const Filestore       = require('./store/Filestore');
+const imdbScraper     = require('./scrapers/imdb-scraper');
+const netflixScraper  = require('./scrapers/netflix-scraper');
+const netflixProvider = require('./providers/netflix-provider');
 
 // todo manual is on s3 store-tolookat/upcomings
 const STORE_FOLDER = './store';
@@ -71,10 +72,14 @@ function getMediaStartYear (media) {
     }
 }
 
-function saveStore (upComings, language, callback) {
-    const file = `${STORE_FOLDER}${STORE_NETFLIX_UPCOMING}/${language}.json`;
-    fs.writeFile(file, JSON.stringify(upComings), function(){
-        const msg = `File successfully written! - Check your at ${file}`;
+function saveStore (upComings, language, configKeys, callback) {
+    const props = {
+        destination: `${STORE_FOLDER}${STORE_NETFLIX_UPCOMING}/${language}.json`,
+        logger,
+        body:  JSON.stringify(upComings)
+    };
+    Filestore(props, configKeys, function(){
+        const msg = `File successfully written! - Check your at ${destination}`;
         logger(msg);
         callback();
     });
@@ -91,7 +96,7 @@ function refreshNetflixUpcoming (configKeys) {
                 newUpcomings.totalItems = netflixUpcoming.meta.result.totalItems;
                 newUpcomings.items = items;
                 newUpcomings.videoId = videos[language];
-                saveStore(newUpcomings, language, function () {
+                saveStore(newUpcomings, language, configKeys, function () {
                     done();
                 });
             });
@@ -104,10 +109,10 @@ function refreshNetflixUpcoming (configKeys) {
 function logger(logTrace) {
     const datetime = new Date();
     const completeLog = `${datetime.toLocaleString()} : ${logTrace}\n`;
+    console.log('Trace succefully logged', completeLog);
     //todo logger file path to s3
-    fs.appendFile('./src/refresh-upcomings-logs.txt', completeLog, function(){
-        console.log('Trace succefully logged');
-    });
+    // fs.appendFile('./src/refresh-upcomings-logs.txt', completeLog, function(){
+    // });
 }
 
 module.exports = refreshNetflixUpcoming;
