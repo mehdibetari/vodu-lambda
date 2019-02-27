@@ -6,8 +6,8 @@ const netflixScraper  = require('./scrapers/netflix-scraper');
 const netflixProvider = require('./providers/netflix-provider');
 
 // todo manual is on s3 store-tolookat/upcomings
-const STORE_FOLDER = './store';
-const STORE_NETFLIX_UPCOMING = '/netflix-upcoming';
+const STORE_FOLDER = 'store/';
+const STORE_NETFLIX_UPCOMING = 'netflix-upcoming/';
 const languages = ['en', 'fr', 'es', 'pt_br', 'de'];
 const videos = {
     fr: 'X3VDoJ7ZnKc',
@@ -74,12 +74,12 @@ function getMediaStartYear (media) {
 
 function saveStore (upComings, language, configKeys, callback) {
     const props = {
-        destination: `${STORE_FOLDER}${STORE_NETFLIX_UPCOMING}/${language}.json`,
+        destination: `${STORE_FOLDER}${STORE_NETFLIX_UPCOMING}${language}.json`,
         logger,
         body:  JSON.stringify(upComings)
     };
-    Filestore(props, configKeys, function(){
-        const msg = `File successfully written! - Check your at ${destination}`;
+    Filestore(props, configKeys, function(location){
+        const msg = `File successfully written! - Check your at ${location}`;
         logger(msg);
         callback();
     });
