@@ -10,7 +10,7 @@ const Filestore = (props, configKeys, callback) => {
 
 const _saveOnS3 = ({destination, logger, body}, configKeys, awsS3Connect, callback) => {
     const params = {
-        Bucket: configKeys.AWS_BUCKET_NAME,
+        Bucket: configKeys.S3.AWS_BUCKET_NAME,
         Key: destination,
         Body: body
     };
@@ -18,7 +18,7 @@ const _saveOnS3 = ({destination, logger, body}, configKeys, awsS3Connect, callba
         if (s3Err) throw s3Err;
         console.log(`File uploaded successfully at ${data.Location}`);
         logger(`File uploaded successfully at ${data.Location}`);
-        callback(`https://${configKeys.AWS_CF_BASE_URL}/${destination}`);
+        callback(`https://${configKeys.S3.AWS_CF_BASE_URL}${destination}`);
     });
 };
 
