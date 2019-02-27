@@ -18,7 +18,7 @@ const _saveOnS3 = ({destination, logger, body}, configKeys, awsS3Connect, callba
         if (s3Err) throw s3Err;
         console.log(`File uploaded successfully at ${data.Location}`);
         logger(`File uploaded successfully at ${data.Location}`);
-        callback(`https://${configKeys.S3.AWS_CF_BASE_URL}${destination}`);
+        callback(data.Location);
     });
 };
 
