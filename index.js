@@ -85,7 +85,16 @@ function saveStore (upComings, language, configKeys, callback) {
     });
 }
 
-function refreshNetflixUpcoming (configKeys) {
+function logger(logTrace) {
+    const datetime = new Date();
+    const completeLog = `${datetime.toLocaleString()} : ${logTrace}\n`;
+    console.log('Trace succefully logged', completeLog);
+    //todo logger file path to s3
+    // fs.appendFile('./src/refresh-upcomings-logs.txt', completeLog, function(){
+    // });
+}
+
+const refreshNetflixUpcoming = async (configKeys) => {
     const startMsg = `\NETFLIX REFRESH UPCOMINGS MEDIA STARTED ${Date.now()}`;
     logger(startMsg);
     async.mapSeries(languages, function(language, done) {
@@ -102,17 +111,8 @@ function refreshNetflixUpcoming (configKeys) {
             });
         });
     }, function () {
-        logger('-----------------------------------');
+        await logger('-----------------------------------');
     });
-}
-
-function logger(logTrace) {
-    const datetime = new Date();
-    const completeLog = `${datetime.toLocaleString()} : ${logTrace}\n`;
-    console.log('Trace succefully logged', completeLog);
-    //todo logger file path to s3
-    // fs.appendFile('./src/refresh-upcomings-logs.txt', completeLog, function(){
-    // });
 }
 
 module.exports = refreshNetflixUpcoming;
