@@ -111,7 +111,7 @@ const refreshNetflixUpcoming = async (configKeys) => {
             });
         });
     }, function () {
-        await logger('-----------------------------------');
+        logger('-----------------------------------');
     });
 }
 
