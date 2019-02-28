@@ -95,23 +95,25 @@ function logger(logTrace) {
 }
 
 const refreshNetflixUpcoming = async (configKeys) => {
-    const startMsg = `\NETFLIX REFRESH UPCOMINGS MEDIA STARTED ${Date.now()}`;
-    logger(startMsg);
-    async.mapSeries(languages, function(language, done) {
-        netflixProvider.getUpcomingMedia(language, function(netflixUpcoming) {
-            let newUpcomings = {};
-            updateUpcoming(netflixUpcoming.items, netflixUpcoming.meta.result.totalItems, language, configKeys, function(items) {
-                newUpcomings.timeStamp = Date.now();
-                newUpcomings.totalItems = netflixUpcoming.meta.result.totalItems;
-                newUpcomings.items = items;
-                newUpcomings.videoId = videos[language];
-                saveStore(newUpcomings, language, configKeys, function () {
-                    done();
+    return new Promise(function(resolve, reject) {
+        logger(`\NETFLIX REFRESH UPCOMINGS MEDIA STARTED ${Date.now()}`);
+        async.mapSeries(languages, function(language, done) {
+            netflixProvider.getUpcomingMedia(language, function(netflixUpcoming) {
+                let newUpcomings = {};
+                updateUpcoming(netflixUpcoming.items, netflixUpcoming.meta.result.totalItems, language, configKeys, function(items) {
+                    newUpcomings.timeStamp = Date.now();
+                    newUpcomings.totalItems = netflixUpcoming.meta.result.totalItems;
+                    newUpcomings.items = items;
+                    newUpcomings.videoId = videos[language];
+                    saveStore(newUpcomings, language, configKeys, function () {
+                        done();
+                    });
                 });
             });
+        }, function () {
+            logger('-----------------------------------');
+            resolve();
         });
-    }, function () {
-        logger('-----------------------------------');
     });
 }
 
